@@ -1,10 +1,10 @@
-import pygame
 import os
 import random
-import math
-import accessories as acc
 from datetime import datetime
 
+import pygame
+
+import accessories as acc
 
 pygame.init()
 
@@ -52,7 +52,7 @@ class Car:
         win.blit(img, (self.x, self.y))
         pygame.draw.rect(win, (200, 0, 0), self.hitbox, 3)
 
-    def move(self, m):
+    def auto_move(self, m):
         self.y -= m
 
     def calc_dist(self, t):
@@ -63,9 +63,10 @@ class Car:
         sec = int(timetaken[5:])
 
         if sec > 0:
-            self.distance += (self.vel * 3.6) / (sec * 1000)
+            # self.distance += (self.vel * 3.6) / (sec * 1000)
+            self.distance += (self.vel * sec) / 3600
 
-        acc.text("TIME = " + str(min) + str(sec), 0, 50, (200, 0, 0))
+        # acc.text("TIME = " + str(min) + str(sec), 0, 50, (200, 0, 0))
         # acc.text(str(self.distance), 0, 100, (200, 0, 0))
 
 
@@ -90,8 +91,8 @@ def collision():
 
 def dashboard():
     pygame.draw.rect(win, (0, 0, 0), (0, 0, 250, 100))
-    acc.text("SPEED = " + str(car.vel), 0, 0, (200, 0, 0))
-    acc.text("DISTANCE = " + str(car.distance), 0, 100, (200, 0, 0))
+    acc.text("SPEED = " + str(car.vel) + "km/h", 0, 0, (200, 0, 0))
+    acc.text("DISTANCE = " + str(car.distance)[:5] + "km", 0, 50, (200, 0, 0))
 
 
 def redraw():
@@ -115,7 +116,7 @@ def redraw():
 
     for cars in Other_cars:
         cars.draw()
-        cars.move(cars.vel - car.vel)
+        cars.auto_move(cars.vel - car.vel)
         acc.text(str(cars.vel), cars.x, cars.y, (0, 200, 200))
         if cars.y <= -1000 or cars.y >= 1000:
             Other_cars.pop(Other_cars.index(cars))
@@ -139,17 +140,17 @@ def nav():
     if keys[pygame.K_UP] and car.vel + 1 <= car.max_vel:
         car.vel += 1
         if car.y >= 400:
-            car.y -= 1
+            car.y -= 5
     else:
         if car.y <= 450 and car.vel > 0:
-            car.y += 1
-    if keys[pygame.K_DOWN] and car.vel - 2 >= 0:
-        car.vel -= 2
+            car.y += 5
+    if keys[pygame.K_DOWN] and car.vel - 1 >= 0:
+        car.vel -= 1
         if car.y <= 500:
-            car.y += 1
+            car.y += 5
     else:
         if car.y >= 450 and car.vel > 0:
-            car.y -= 1
+            car.y -= 5
 
     if keys[pygame.K_RIGHT] and car.vel > 0:
         car.right = True
